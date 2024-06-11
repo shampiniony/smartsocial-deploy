@@ -13,7 +13,7 @@ RUN yarn install
 COPY . .
 
 # Build the application
-RUN yarn dev
+RUN yarn build
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:stable-alpine as production-stage
