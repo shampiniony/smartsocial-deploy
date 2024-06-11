@@ -1,3 +1,6 @@
 [submodule "smartsocial-web"]
 	path = smartsocial-web
 	url = https://github.com/shampiniony/smartsocial-web.git
+[submodule "smartsocial-backend"]
+	path = smartsocial-backend
+	url = https://github.com/shampiniony/smartsocial-backend.git
