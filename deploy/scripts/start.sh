@@ -6,11 +6,11 @@
 
 
 echo "Preparing and starting frontend..."
-(cd ../../dish-dash-frontend && docker-compose up -d)
+(cd ../../smartsocial-web && docker-compose up -d)
 echo "Frontend started."
 
 echo "Preparing and starting backend..."
-(cd ../../dishdash-server && docker-compose up -d)
+(cd ../../smartsocial-backend && docker-compose up -d)
 echo "Backend started."
 
 echo "Starting traefik services..."

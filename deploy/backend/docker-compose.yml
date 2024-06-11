@@ -1,0 +1,96 @@
+services:
+  backend:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: ./docker/run.sh
+    container_name: backend
+    env_file:
+      - .env
+    volumes:
+      - ./media:/backend/media:consistent
+      - ./static:/backend/static:consistent
+    depends_on:
+      - database
+      - broker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api/v1`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    networks:
+      - database
+      - backend
+      - proxynet
+
+  database:
+    restart: unless-stopped
+    image: postgis/postgis:16-3.4
+    container_name: database
+    volumes:
+      - ~/.pg/pg_data/smartsocial_hack:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $POSTGRES_DB -U $POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - database
+      - backend
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '1000:8080'
+    depends_on:
+      - database
+    networks:
+      - database
+
+  broker:
+    container_name: broker
+    image: redis:alpine3.16
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/root/redis
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - database
+
+  worker:
+    container_name: worker
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: celery -A backend worker -l info
+    volumes:
+      - .:/backend
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - broker
+      - backend
+    networks:
+      - database
+      - backend
+
+networks:
+  database:
+  backend:
+  proxynet:
+    name: proxynet
+    external: true
