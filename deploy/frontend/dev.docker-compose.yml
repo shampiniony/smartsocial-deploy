@@ -8,11 +8,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.routers.frontend.rule=Host(`kolomnago.ru`) && PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
       - "traefik.http.routers.frontend.priority=1"
-      - "traefik.http.routers.frontend.tls.certresolver=le" 
-      - "traefik.http.routers.frontend.entrypoints=https"  
     ports:
       - "3000:3000"
     networks:

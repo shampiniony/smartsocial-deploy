@@ -6,16 +6,27 @@ services:
     container_name: traefik
     command: 
       - "--providers.docker"
-      - "--entrypoints.web.address=:80"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=proxynet"
       - "--log.level=DEBUG"
       - "--api.insecure=true"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"      
+      # http redirects
+      - "--entrypoints.http.http.redirections.entrypoint.to=https"
+      - "--entrypoints.http.http.redirections.entrypoint.scheme=https"
+      # Let'sEncrypt
+      - "--entrypoints.https.http.tls.certResolver=le"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--certificatesresolvers.le.acme.email=you@mail.net"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ssl/dishdash/letsencrypt:/letsencrypt
     networks:
       - proxynet
 

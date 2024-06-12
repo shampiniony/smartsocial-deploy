@@ -16,10 +16,8 @@ services:
       - broker
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`kolomnago.ru`) && PathPrefix(`/api/v1`)"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api/v1`)"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
-      - "traefik.http.routers.backend.tls.certresolver=le" 
-      - "traefik.http.routers.backend.entrypoints=https"  
     networks:
       - database
       - backend
